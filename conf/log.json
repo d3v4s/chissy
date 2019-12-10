@@ -1,0 +1,5 @@
+{
+  "path": "log/server/",
+  "format": "[{datetime}] {address} : {username} - {password}",
+  "rotate": true
+}
