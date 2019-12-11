@@ -15,4 +15,6 @@ You can run Chissy as _daemon_ through:
 `systemctl start|stop|restart chissy.service`
 
 or use:  
-`chissy start|get-log|version|help [options]`
+`chissy start|get-log|version|help [options]`  
+  
+Read the log create on _/var/log/chissy/_.
