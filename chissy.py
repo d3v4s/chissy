@@ -1,6 +1,6 @@
 #!/bin/env python3
 
-from chissy.core.chissy import Chissy
+from chissy.core.controller import Controller
 
 import chissy
 import sys
@@ -45,7 +45,7 @@ Examples:
 helpers = helpers.format(name=sys.argv[0])
 
 if len(sys.argv) < 2:
-    print('[!!] I need a argument')
+    print('[!!] Chissy need a argument')
     print(helpers)
     sys.exit(-1)
 
@@ -54,8 +54,6 @@ command = sys.argv[1]
 if command == 'help':
     print(helpers)
     sys.exit(0)
-elif command == 'version':
-    print("Chissy {version} - Fake SSH server".format(version=chissy.__version__))
 
 with open('conf/server.json') as file:
     conf_server = json.load(file)
@@ -63,5 +61,5 @@ with open('conf/server.json') as file:
 with open('conf/log.json') as file:
     conf_log = json.load(file)
 
-chissy = Chissy(command, conf_server, conf_log)
-chissy.execute()
+ctrl = Controller(command, conf_server, conf_log)
+ctrl.execute()

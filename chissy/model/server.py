@@ -4,7 +4,7 @@ import paramiko
 
 # class server for paramiko
 class Server(paramiko.ServerInterface):
-    log = None
+    logger = None
     address = None
 
     def __init__(self):
@@ -18,5 +18,5 @@ class Server(paramiko.ServerInterface):
     def check_auth_password(self, username, password):
         print('[+] Username: ' + username)
         print('[+] Password: ' + password)
-        self.log.write_log(username, password, self.address)
+        self.logger.write_log(username, password, self.address)
         return paramiko.AUTH_FAILED
