@@ -17,4 +17,4 @@ You can run Chissy as _daemon_ through:
 or use:  
 `chissy start|get-log|version|help [options]`  
   
-Read the log create on _/var/log/chissy/_.
+Read the log create on `/var/log/chissy/`.
