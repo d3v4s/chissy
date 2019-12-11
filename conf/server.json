@@ -2,6 +2,5 @@
     "address": "127.0.0.1",
     "port": 8888,
     "host_key_filename": "conf/key/test_rsa.key",
-    "daemon": true,
     "PID_path": "data/PID"
 }

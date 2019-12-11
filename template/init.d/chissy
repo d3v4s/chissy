@@ -1,0 +1,44 @@
+#! /bin/sh
+
+NAME="chissy"
+DESC="Chissy"
+PIDFILE="/var/run/$NAME.pid"
+LOGFILE="/var/log/$NAME.log"
+
+# chissy path
+DAEMON="/usr/bin/chissy"
+
+# option to start fake server
+DAEMON_OPTS="start"
+
+START_OPTS="--start --background --make-pidfile --pidfile $PIDFILE --exec $DAEMON $DAEMON_OPTS"
+STOP_OPTS="--stop --pidfile $PIDFILE"
+
+test -x $DAEMON || exit 0
+
+set -e
+
+case "$1" in
+  start)
+    echo "Starting $DESC"
+    start-stop-daemon $START_OPTS >> $LOGFILE
+    ;;
+  stop)
+    echo "Stopping $DESC"
+    start-stop-daemon $STOP_OPTS
+    rm -f $PIDFILE
+    ;;
+  restart|force-reload)
+    echo "Restarting $DESC"
+    start-stop-daemon $STOP_OPTS
+    sleep 1
+    start-stop-daemon $START_OPTS >> $LOGFILE
+    ;;
+  *)
+    N=/etc/init.d/$NAME
+    echo "Usage: $N {start|stop|restart|force-reload}" >&2
+    exit 1
+    ;;
+esac
+
+exit 0

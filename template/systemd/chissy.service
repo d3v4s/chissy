@@ -1,0 +1,14 @@
+[Unit]
+Description=Chissy 1.0 - fake ssh server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory={workdir}
+ExecStart=/usr/bin/chissy start
+ExecStop=/usr/bin/chissy stop
+ExecReload=/usr/bin/chissy stop ; /usr/bin/chissy start
+Restart=no
+
+[Install]
+WantedBy=multi-user.target

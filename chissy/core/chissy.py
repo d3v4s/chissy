@@ -1,9 +1,8 @@
-from chiss.model.server import Server
-from chiss.model.log import Log
+from chissy.model.server import Server
+from chissy.model.log import Log
 
 import socket
 import sys
-import datetime
 
 try:
     import paramiko
@@ -13,7 +12,7 @@ except IndexError:
     exit(-1)
 
 
-class Chiss:
+class Chissy:
     __instance = None
     __command = None
     __conf_server = None
@@ -22,13 +21,13 @@ class Chiss:
 
     def __new__(cls, command=None, conf_server=None, conf_log=None):
         # singleton
-        return object.__new__(cls) if Chiss.__instance is None else Chiss.__instance
+        return object.__new__(cls) if Chissy.__instance is None else Chissy.__instance
 
     def __init__(self, command=None, conf_server=None, conf_log=None):
         if command is None or conf_server is None or conf_log is None:
             return
         # singleton
-        Chiss.__instance = self
+        Chissy.__instance = self
         # set attribute
         self.__conf_server = conf_server
         self.__conf_log = conf_log
@@ -50,6 +49,7 @@ class Chiss:
 
     # method to start fake server
     def __startServer__(self):
+        print('[*] Starting server...')
         # server loop
         while 1:
             # create socket and listen on it
@@ -64,15 +64,19 @@ class Chiss:
                 print('[!!] Listen failed: ' + str(e))
                 sys.exit(-1)
 
+            print()
             # accepted connection
             print('[*] Caught the hacker!!!')
-            print('[*] Address: ' + str(address))
+            print('[+] Address: ' + str(address))
             try:
+                # set server
                 session = paramiko.Transport(client)
                 session.add_server_key(paramiko.RSAKey(filename=self.__conf_server['host_key_filename']))
                 server = Server()
                 server.address = address
+                server.log = self.__log
 
+                # start session
                 try:
                     session.start_server(server=server)
                 except paramiko.SSHException as e:
@@ -80,6 +84,7 @@ class Chiss:
 
                 session.accept(60)
                 session.close()
+                break
             except Exception as e:
                 print('[!!] Caught exception: ' + str(e))
                 try:
