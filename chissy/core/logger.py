@@ -2,18 +2,20 @@ import datetime
 import os
 
 
-class Log:
+class Logger:
     __instance = None
     __conf_log = None
 
     # singleton
-    def __new__(cls, conf_log):
-        return object.__new__(cls) if Log.__instance is None else Log.__instance
+    def __new__(cls, conf_log=None):
+        return object.__new__(cls) if Logger.__instance is None else Logger.__instance
 
-    def __init__(self, conf_log):
-        Log.__instance = self
+    def __init__(self, conf_log=None):
+        if Logger.__instance is not None:
+            return
+
+        Logger.__instance = self
         self.__conf_log = conf_log
-
         # create log directory if not exists
         if not os.path.exists(conf_log['path']):
             os.makedirs(conf_log['path'])
