@@ -2,7 +2,7 @@ import threading
 import paramiko
 
 
-# class server
+# class server for paramiko
 class Server(paramiko.ServerInterface):
     log = None
     address = None

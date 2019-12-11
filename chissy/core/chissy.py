@@ -34,15 +34,6 @@ class Chissy:
         self.__command = command
         self.__log = Log(conf_log)
 
-    def execute(self):
-        # switch command and call function
-        switcher = {
-            "start": self.__startServer__,
-            "stop": self.__stopServer__
-        }
-        func = switcher.get(self.__command, self.__invalidCommand__)
-        func()
-
     #####################################
     # PRIVATE METHODS
     #####################################
@@ -84,7 +75,6 @@ class Chissy:
 
                 session.accept(60)
                 session.close()
-                break
             except Exception as e:
                 print('[!!] Caught exception: ' + str(e))
                 try:
@@ -93,17 +83,26 @@ class Chissy:
                     pass
                 sys.exit(-1)
 
-    def __stopServer__(self):
-        return
-
     def __invalidCommand__(self):
         print('[!!] Invalid command ' + str(self.__command))
         sys.exit(1)
+
+    def __readLog__(self):
+        return
+
+    def __install__(self):
+        return
 
     #####################################
     # PUBLIC METHODS
     #####################################
 
-    def write_log(self, username, password, address):
-        log = Log(self.__conf_log)
-        log.write_log(username, password, address)
+    def execute(self):
+        # switch command and call function
+        switcher = {
+            "start": self.__startServer__,
+            "read-log": self.__readLog__,
+            "install": self.__install__
+        }
+        func = switcher.get(self.__command, self.__invalidCommand__)
+        func()

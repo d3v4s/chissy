@@ -1,5 +1,5 @@
 [Unit]
-Description=Chissy 1.0 - fake ssh server
+Description=Chissy {version} - Fake SSH server
 After=network.target
 
 [Service]

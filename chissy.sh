@@ -14,4 +14,4 @@ done
 
 CHISSY=`dirname "$CHISSY"`
 
-cd "$CHISSY" && ./run.py "$@"
+cd "$CHISSY" && ./chissy.py "$@"
