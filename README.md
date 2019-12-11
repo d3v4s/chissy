@@ -1,2 +1,3 @@
-# chiss
-Fake SSH server for diffensive analysis
+# Chissy
+
+Fake SSH server to defensive analysis
