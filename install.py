@@ -149,7 +149,10 @@ def install():
             service_file = open('template/systemd/chissy.service', 'r')
             chiss_service = service_file.read()
             service_file.close()
-            chiss_service = chiss_service.format(workdir=install_path, version=chissy.__version__)
+            chiss_service = chiss_service.format(
+                workdir=install_path,
+                version=chissy.__version__
+            )
             f = open(service_path, 'w')
             f.write(chiss_service)
             f.close()
@@ -185,7 +188,6 @@ def uninstall():
             os.remove(symlink_bin)
         if os.path.islink(symlink_etc):
             os.remove(symlink_etc)
-
 
         # remove autocomplete
         chissy_compl = '/'.join([completions_path, 'chissy'])
