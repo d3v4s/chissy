@@ -52,6 +52,8 @@ class Controller:
                 # client: socket
                 client, address = sock.accept()
             except Exception as e:
+                print(str(e.args[0]))
+                print(str(e.args))
                 print('[!!] Listen failed: ' + str(e))
                 sys.exit(-1)
 
@@ -75,6 +77,8 @@ class Controller:
                 self.__session.accept(60)
                 self.__session.close()
             except Exception as e:
+                print(str(e.args[0]))
+                print(str(e.args))
                 print('[!!] Caught exception: ' + str(e))
                 try:
                     self.__session.close()

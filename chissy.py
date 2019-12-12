@@ -47,7 +47,7 @@ Examples:
 
 """
 
-helpers = helpers.format(name=sys.argv[0], versio=chissy.__version__, author=chissy.__author__)
+helpers = helpers.format(name=sys.argv[0], version=chissy.__version__, author=chissy.__author__)
 
 if len(sys.argv) < 2:
     print('[!!] Chissy need a argument')
