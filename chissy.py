@@ -9,6 +9,9 @@ import json
 name = sys.argv[0]
 
 helpers = """
+Chissy {version} -- Fake SSH Server
+Developed by {author}
+
 Usage: {name} start|get-log|version|help|install [option]
 
 Arguments:
@@ -16,7 +19,7 @@ Arguments:
     start
         starting a fake ssh server
 
-    get-log
+    get-log [options]
         show the logs create. You can specify the get-log options
 
     version
@@ -26,15 +29,17 @@ Arguments:
         show this helps
 
 
-get-log options:
-    -a --address ADDRESS
-        specify the address
+Options:
 
-    -b --before-date DATE
-        get only the logs before the date specified
-
-    -d --after-date DATE
-        get only the logs after the date specified
+    get-log:
+        -a --address ADDRESS
+            specify the address
+    
+        -b --before-date DATE
+            get only the logs before the date specified. DATE format yyyy-mm-dd
+    
+        -n --next-date DATE
+            get only the logs after the date specified. Use the same DATE format to -b
 
 Examples:
     {name} start
@@ -42,7 +47,7 @@ Examples:
 
 """
 
-helpers = helpers.format(name=sys.argv[0])
+helpers = helpers.format(name=sys.argv[0], versio=chissy.__version__, author=chissy.__author__)
 
 if len(sys.argv) < 2:
     print('[!!] Chissy need a argument')

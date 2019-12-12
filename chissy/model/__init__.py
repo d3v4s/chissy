@@ -1,2 +1,2 @@
 
-__all__ = ['log', 'server']
+__all__ = ['server']

@@ -7,13 +7,7 @@ from chissy.core.logger import Logger
 
 import socket
 import sys
-
-try:
-    import paramiko
-except IndexError:
-    print('[!!] This application need paramiko.')
-    print("[!!] To install it execute 'pip install paramiko'")
-    exit(-1)
+import paramiko
 
 
 class Controller:
@@ -96,8 +90,8 @@ class Controller:
         return
 
     def __getVersion__(self):
-        print('Chessy {version} - Fake SSH server - Developed by Andrea Serra (DevAS)'.
-              format(version=chissy.__version__))
+        print('Chessy {version} - Fake SSH server - Developed by {author}'.
+              format(version=chissy.__version__, author=chissy.__author__))
         sys.exit(0)
 
     def __invalidCommand__(self):
