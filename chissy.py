@@ -60,6 +60,11 @@ if command == 'help':
     print(helpers)
     sys.exit(0)
 
+if command == 'version':
+    print('Chessy {version} - Fake SSH server - Developed by {author}'.
+          format(version=chissy.__version__, author=chissy.__author__))
+    sys.exit(0)
+
 with open('conf/server.json') as file:
     conf_server = json.load(file)
 
