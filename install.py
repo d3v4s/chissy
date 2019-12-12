@@ -4,11 +4,15 @@ from shutil import copytree, copy, rmtree
 
 import os
 import json
-
+import pkg_resources
 import sys
-
 import chissy
+import json
 
+# read config from file
+file = open('install.json')
+install_config = json.load(file)
+file.close()
 
 # check if is root user
 if os.getuid() != 0:
@@ -25,7 +29,7 @@ if len(sys.argv) > 1:
 completions_path = '/usr/share/bash-completion/completions'
 
 # installation paths
-install_path = "/opt/chissy/{version}".format(version=chissy.__version__)
+install_path = "{path}/{version}".format(path=install_config['installation-path'], version=chissy.__version__)
 service_path = '/usr/lib/systemd/system/chissy.service'
 symlink_bin = '/usr/bin/chissy'
 symlink_etc = '/etc/chissy'
@@ -39,17 +43,25 @@ install_files = [
     'chissy',
     'conf',
     'chissy.sh',
-    'chissy.py',
+    'chissy.py'
     'install.py'
 ]
 
 # files to be applied 'chmod +x'
 exec_files = [
     'chissy.sh',
-    'chissy.py',
+    'chissy.py'
     'install.py'
 ]
 
+# read need packages from requirements.txt
+file = open('requirements.txt')
+req_packages = file.read()
+file.close()
+req_packages = req_packages.split('\n')
+req_packages.remove('')
+
+# help
 helpers = """
 Usage: {name} [install|remove]
 """
@@ -65,16 +77,16 @@ def install():
     try:
         # copy file on installation path
         os.makedirs(install_path)
-        for file in install_files:
-            to = '/'.join([install_path, file])
-            if os.path.isfile(file):
-                copy(file, to)
+        for f in install_files:
+            to = '/'.join([install_path, f])
+            if os.path.isfile(f):
+                copy(f, to)
             else:
-                copytree(file, to)
+                copytree(f, to)
 
         # add execution permission
-        for file in exec_files:
-            os.system("chmod +x {path}/{file}".format(path=install_path, file=file))
+        for f in exec_files:
+            os.system("chmod +x {path}/{file}".format(path=install_path, file=f))
 
         # change log directory
         path = '/'.join([install_path, 'conf', 'log.json'])
@@ -89,9 +101,9 @@ def install():
 
         # add bash complete
         if os.path.isdir(completions_path):
-            file = open('/'.join([completions_path, 'chissy']), 'w')
-            file.write("complete -W 'start get-log version help' chissy")
-            file.close()
+            f = open('/'.join([completions_path, 'chissy']), 'w')
+            f.write("complete -W 'start get-log version help' chissy")
+            f.close()
 
         # create logs dir /var/log/chissy
         if not os.path.exists(logs_path):
@@ -103,22 +115,30 @@ def install():
         os.symlink('/'.join([install_path, "chissy.sh"]), symlink_bin)
         # create symlink on /etc/chissy to conf
         os.symlink('/'.join([install_path, 'conf']), symlink_etc)
-        print('[*] Symbolic link created')
+        print('[*] Symbolic links created')
 
         # add settings for daemon
-        service_file = open('template/systemd/chissy.service', 'r')
-        chiss_service = service_file.read()
-        service_file.close()
-        chiss_service = chiss_service.format(workdir=install_path, version=chissy.__version__)
-        file = open(service_path, 'w')
-        file.write(chiss_service)
-        file.close()
-        os.system('systemctl daemon-reload')
+        if install_config['systemd-service']:
+            service_file = open('template/systemd/chissy.service', 'r')
+            chiss_service = service_file.read()
+            service_file.close()
+            chiss_service = chiss_service.format(workdir=install_path, version=chissy.__version__)
+            f = open(service_path, 'w')
+            f.write(chiss_service)
+            f.close()
+            os.system('systemctl daemon-reload')
+            print('[*] Systemd service created')
 
-        print('[*] Daemon created')
+        # install require packages
+        installed_pckgs = pkg_resources.working_set
+        installed_pckgs = sorted(["%s" % i.key for i in installed_pckgs])
+        for pckg in req_packages:
+            if pckg not in installed_pckgs:
+                install_package(pckg)
+
         print('[*] Installation complete')
         print()
-        print('[*] Usage: chissy start|get-log|version|help [options]')
+        print('[*] Usage: chissy {start|get-log|version|help} [options]')
         print('[*] Usage daemon: systemctl {start|stop|restart} chissy')
         print()
     except Exception as e:
@@ -134,10 +154,11 @@ def uninstall():
         # remove service and symlink
         if os.path.exists(service_path):
             os.remove(service_path)
-        if os.path.exists(symlink_bin):
+        if os.path.islink(symlink_bin):
             os.remove(symlink_bin)
-        if os.path.exists(symlink_etc):
+        if os.path.islink(symlink_etc):
             os.remove(symlink_etc)
+
 
         # remove autocomplete
         chissy_compl = '/'.join([completions_path, 'chissy'])
@@ -182,8 +203,11 @@ def check_install():
     # remove service and symlink
     if os.path.exists(service_path):
         os.remove(service_path)
-    if os.path.exists(symlink_bin):
+    if os.path.islink(symlink_bin):
         os.remove(symlink_bin)
+    if os.path.islink(symlink_etc):
+        os.remove(symlink_etc)
+
     # start install
     install()
 
@@ -201,6 +225,21 @@ def check_uninstall():
                 sys.exit(0)
     else:
         print()
+
+
+def install_package(pckg):
+    print('[!!] Chissy application need ' + pckg)
+    while 1:
+        resp = input("[?] Install it now with pip? (Y/n)")
+        resp = resp.lower()
+        if resp == '' or resp == 'y' or resp == 'ye' or resp == 'yes':
+            if os.path.exists('/usr/bin/pip3'):
+                os.system('pip3 install ' + pckg)
+            else:
+                print('[!!] You don\'t have pip3 installed!!!')
+            break
+        elif resp == 'n' or resp == 'no':
+            break
 
 
 # main

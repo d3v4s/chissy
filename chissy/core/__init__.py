@@ -1,2 +1,2 @@
 
-__all__ = ['chissy']
+__all__ = ['controller', 'logger']
