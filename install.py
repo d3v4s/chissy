@@ -43,15 +43,15 @@ install_files = [
     'chissy',
     'conf',
     'chissy.sh',
-    'chissy.py'
-    'install.py'
+    'chissy.py',
+    # 'install.py'
 ]
 
 # files to be applied 'chmod +x'
 exec_files = [
     'chissy.sh',
-    'chissy.py'
-    'install.py'
+    'chissy.py',
+    # 'install.py'
 ]
 
 # read need packages from requirements.txt
@@ -59,7 +59,10 @@ file = open('requirements.txt')
 req_packages = file.read()
 file.close()
 req_packages = req_packages.split('\n')
-req_packages.remove('')
+try:
+    req_packages.remove('')
+except ValueError:
+    pass
 
 # help
 helpers = """
@@ -143,7 +146,8 @@ def install():
         print()
     except Exception as e:
         print('[!!] Caught a exception while installing. ' + str(e))
-        sys.exit(-1)
+        if e.args[0] != 104:
+            sys.exit(-1)
 
 
 # function to uninstall chessy

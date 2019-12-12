@@ -1,4 +1,4 @@
 {
-  "sytemd-service": true,
+  "systemd-service": true,
   "installation-path": "/opt/chissy"
 }
