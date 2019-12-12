@@ -1,13 +1,11 @@
 #!/bin/env python3
-
 from shutil import copytree, copy, rmtree
 
 import os
-import json
-import pkg_resources
 import sys
-import chissy
 import json
+import chissy
+import pkg_resources
 
 # read config from file
 file = open('install.json')
@@ -93,14 +91,40 @@ def install():
 
         # change log directory
         path = '/'.join([install_path, 'conf', 'log.json'])
-        log_json_file = open(path, 'r')
-        conf_log = json.load(log_json_file)
-        log_json_file.close()
+        f = open(path, 'r')
+        conf_log = json.load(f)
+        f.close()
         conf_log['path'] = logs_path
         json_out = json.dumps(conf_log, sort_keys=True, indent=4, separators=(',', ': '))
-        log_json_file = open(path, 'w')
-        log_json_file.write(json_out)
-        log_json_file.close()
+        f = open(path, 'w')
+        f.write(json_out)
+        f.close()
+
+        # create new key
+        while 1:
+            resp = input('[?] Generate new private key? (Y/n)')
+            resp = resp.lower()
+            if resp == '' or resp == 'y' or resp == 'ye' or resp == 'yes':
+                # generate RSA key
+                exc = 'openssl req -new -x509 -nodes -keyout {path}/conf/key/rsa.key'.format(path=install_path)
+                os.system(exc)
+                exc = 'ssh-keygen -p -m PEM -f {path}/conf/key/rsa.key'.format(path=install_path)
+                os.system(exc)
+
+                # change key on configurations
+                path = '/'.join([install_path, 'conf', 'server.json'])
+                f = open(path, 'r')
+                conf_server = json.load(f)
+                f.close()
+                conf_server['host_key_filename'] = '{path}/conf/key/rsa.key'.format(path=install_path)
+                json_out = json.dumps(conf_server, sort_keys=True, indent=4, separators=(',', ': '))
+                f = open(path, 'w')
+                f.write(json_out)
+                f.close()
+                break
+            elif resp == 'n' or resp == 'no':
+                break
+
 
         # add bash complete
         if os.path.isdir(completions_path):
@@ -146,8 +170,7 @@ def install():
         print()
     except Exception as e:
         print('[!!] Caught a exception while installing. ' + str(e))
-        if e.args[0] != 104:
-            sys.exit(-1)
+        sys.exit(-1)
 
 
 # function to uninstall chessy
@@ -196,7 +219,7 @@ def check_install():
     if os.path.isdir(install_path):
         print('[!!] Chissy is already installed')
         while 1:
-            resp = input('[?] You want to reinstall it? (y/N): ')
+            resp = input('[?] Do you want to reinstall it? (y/N): ')
             resp = resp.lower()
             if resp == "y" or resp == "ye" or resp == "yes":
                 uninstall()

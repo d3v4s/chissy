@@ -1,13 +1,10 @@
 import os
-from socket import socket
+import sys
+import socket
+import paramiko
 
-import chissy
 from chissy.model.server import Server
 from chissy.core.logger import Logger
-
-import socket
-import sys
-import paramiko
 
 
 class Controller:
@@ -16,7 +13,6 @@ class Controller:
     __conf_server = None
     __conf_log = None
     __log = None
-    __session = None
 
     def __new__(cls, command=None, conf_server=None, conf_log=None):
         # singleton
@@ -49,12 +45,10 @@ class Controller:
                 sock.listen(100)
                 print()
                 print('[*] Listening for connection...')
-                # client: socket
                 client, address = sock.accept()
             except Exception as e:
-                print(str(e.args[0]))
-                print(str(e.args))
                 print('[!!] Listen failed: ' + str(e))
+                sock.close()
                 sys.exit(-1)
 
             # hacker is connected, now sniff it!!!
@@ -62,29 +56,33 @@ class Controller:
             print('[+] Address: ' + str(address))
             try:
                 # set server
-                self.__session = paramiko.Transport(client)
-                self.__session.add_server_key(paramiko.RSAKey(filename=self.__conf_server['host_key_filename']))
+                session = paramiko.Transport(client)
+                session.add_server_key(paramiko.RSAKey(filename=self.__conf_server['host_key_filename']))
                 server = Server()
                 server.address = address
                 server.logger = self.__log
 
                 # start session
                 try:
-                    self.__session.start_server(server=server)
+                    session.start_server(server=server)
                 except paramiko.SSHException as e:
-                    print('[!!] SSH negotiation failed.')
+                    print('[!!] SSH negotiation failed. Error: ' + str(e))
 
-                self.__session.accept(60)
-                self.__session.close()
+                session.accept(20)
+                session.close()
+                sock.close()
             except Exception as e:
-                print(str(e.args[0]))
-                print(str(e.args))
                 print('[!!] Caught exception: ' + str(e))
                 try:
-                    self.__session.close()
+                    session.close()
+                    sock.close()
                 except IndexError:
                     pass
-                sys.exit(-1)
+                try:
+                    if e.args[0] != 104:
+                        sys.exit(-1)
+                except IndexError:
+                    pass
 
     def __readLog__(self):
         return
@@ -92,11 +90,6 @@ class Controller:
     def __install__(self):
         os.system('./install.py')
         return
-
-    def __getVersion__(self):
-        print('Chessy {version} - Fake SSH server - Developed by {author}'.
-              format(version=chissy.__version__, author=chissy.__author__))
-        sys.exit(0)
 
     def __invalidCommand__(self):
         print('[!!] Invalid command ' + str(self.__command))
@@ -111,8 +104,8 @@ class Controller:
         switcher = {
             "start": self.__startServer__,
             "get-log": self.__readLog__,
-            "install": self.__install__,
-            "version": self.__getVersion__
+            "install": self.__install__
+            # "version": self.__getVersion__
         }
         func = switcher.get(self.__command, self.__invalidCommand__)
         func()
