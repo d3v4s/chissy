@@ -93,7 +93,9 @@ def install():
             file.write("complete -W 'start get-log version help' chissy")
             file.close()
 
-        # TODO create /var/log/chissy dirs
+        # create logs dir /var/log/chissy
+        if not os.path.exists(logs_path):
+            os.makedirs(logs_path)
 
         print('[*] Files copied')
 
@@ -116,7 +118,7 @@ def install():
         print('[*] Daemon created')
         print('[*] Installation complete')
         print()
-        print('[*] Usage: chissy start|get-log|version|help [option]')
+        print('[*] Usage: chissy start|get-log|version|help [options]')
         print('[*] Usage daemon: systemctl {start|stop|restart} chissy')
         print()
     except Exception as e:
@@ -141,6 +143,19 @@ def uninstall():
         chissy_compl = '/'.join([completions_path, 'chissy'])
         if os.path.exists(chissy_compl):
             os.remove(chissy_compl)
+
+        print('[*] All installation files have been deleted')
+
+        # remove log files
+        while 1:
+            resp = input('[?] Remove all log files? (y/N)')
+            resp = resp.lower()
+            if resp == 'y' or resp == 'ye' or resp == 'yes':
+                if os.path.exists(logs_path):
+                    rmtree(logs_path)
+                    break
+            elif resp == "" or resp == "n" or resp == 'no':
+                break
 
         # remove installation path
         rmtree(install_path)
