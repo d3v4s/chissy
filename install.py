@@ -21,10 +21,15 @@ command = ""
 if len(sys.argv) > 1:
     command = sys.argv[1]
 
-# installation path
+# path to be insert the bash completions
+completions_path = '/usr/share/bash-completion/completions'
+
+# installation paths
 install_path = "/opt/chissy/{version}".format(version=chissy.__version__)
-symlink_path = '/usr/bin/chissy'
 service_path = '/usr/lib/systemd/system/chissy.service'
+symlink_bin = '/usr/bin/chissy'
+symlink_etc = '/etc/chissy'
+
 
 # path used for logs
 logs_path = '/var/log/chissy'
@@ -82,10 +87,20 @@ def install():
         log_json_file.write(json_out)
         log_json_file.close()
 
+        # add bash complete
+        if os.path.isdir(completions_path):
+            file = open('/'.join([completions_path, 'chissy']), 'w')
+            file.write("complete -W 'start get-log version help' chissy")
+            file.close()
+
+        # TODO create /var/log/chissy dirs
+
         print('[*] Files copied')
 
         # create symbolic link on /usr/bin to chissy
-        os.symlink('/'.join([install_path, "chissy.sh"]), symlink_path)
+        os.symlink('/'.join([install_path, "chissy.sh"]), symlink_bin)
+        # create symlink on /etc/chissy to conf
+        os.symlink('/'.join([install_path, 'conf']), symlink_etc)
         print('[*] Symbolic link created')
 
         # add settings for daemon
@@ -98,10 +113,10 @@ def install():
         file.close()
         os.system('systemctl daemon-reload')
 
-        print('[*] Created daemon')
+        print('[*] Daemon created')
         print('[*] Installation complete')
         print()
-        print('[*] Usage: chessy start|get-log|version|help [option]')
+        print('[*] Usage: chissy start|get-log|version|help [option]')
         print('[*] Usage daemon: systemctl {start|stop|restart} chissy')
         print()
     except Exception as e:
@@ -117,8 +132,15 @@ def uninstall():
         # remove service and symlink
         if os.path.exists(service_path):
             os.remove(service_path)
-        if os.path.exists(symlink_path):
-            os.remove(symlink_path)
+        if os.path.exists(symlink_bin):
+            os.remove(symlink_bin)
+        if os.path.exists(symlink_etc):
+            os.remove(symlink_etc)
+
+        # remove autocomplete
+        chissy_compl = '/'.join([completions_path, 'chissy'])
+        if os.path.exists(chissy_compl):
+            os.remove(chissy_compl)
 
         # remove installation path
         rmtree(install_path)
@@ -145,8 +167,8 @@ def check_install():
     # remove service and symlink
     if os.path.exists(service_path):
         os.remove(service_path)
-    if os.path.exists(symlink_path):
-        os.remove(symlink_path)
+    if os.path.exists(symlink_bin):
+        os.remove(symlink_bin)
     # start install
     install()
 
