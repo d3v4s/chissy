@@ -68,7 +68,9 @@ class Controller:
                 except paramiko.SSHException as e:
                     print('[!!] SSH negotiation failed. Error: ' + str(e))
 
-                session.accept(20)
+                # timeout maximum: 10
+                # else throw paramiko exception
+                session.accept(10)
                 session.close()
                 sock.close()
             except Exception as e:
