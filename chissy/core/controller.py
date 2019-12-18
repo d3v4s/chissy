@@ -41,7 +41,7 @@ class Controller:
             try:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                sock.bind((self.__conf_server['address'], self.__conf_server['port']))
+                sock.bind((self.__conf_server['addess'], self.__conf_server['port']))
                 sock.listen(100)
                 print()
                 print('[*] Listening for connection...')
@@ -57,7 +57,7 @@ class Controller:
             try:
                 # set server
                 session = paramiko.Transport(client)
-                session.add_server_key(paramiko.RSAKey(filename=self.__conf_server['host_key_filename']))
+                session.add_server_key(paramiko.RSAKey(filename=self.__conf_server['hots-key-filename']))
                 server = Server()
                 server.address = address
                 server.logger = self.__log
@@ -87,14 +87,37 @@ class Controller:
                     pass
 
     def __readLog__(self):
-        return
+        options = sys.argv[2:]
+        switcher = {
+            '-a': self.__log.set_address,
+            '-f': self.__log.set_from_date,
+            '-t': self.__log.set_to_date
+        }
+        for i, opt in enumerate(options):
+            setter = switcher.get(opt, 0)
+            if setter == 0:
+                continue
+            setter(options[i+1])
 
-    def __install__(self):
-        os.system('./install.py')
-        return
+        print(self.__log.read_log())
+
+    def __removeLog__(self):
+        options = sys.argv[2:]
+        switcher = {
+            '-f': self.__log.set_from_date,
+            '-t': self.__log.set_to_date
+        }
+        for i, opt in enumerate(options):
+            setter = switcher.get(opt, 0)
+            if setter == 0:
+                continue
+            setter(options[i + 1])
+
+        self.__log.remove_log()
 
     def __invalidCommand__(self):
         print('[!!] Invalid command ' + str(self.__command))
+        print('[!!] Show the help with "{name} help"'.format(name=sys.argv[0]))
         sys.exit(1)
 
     #####################################
@@ -106,8 +129,7 @@ class Controller:
         switcher = {
             "start": self.__startServer__,
             "get-log": self.__readLog__,
-            "install": self.__install__
-            # "version": self.__getVersion__
+            "remove-log": self.__removeLog__
         }
         func = switcher.get(self.__command, self.__invalidCommand__)
         func()

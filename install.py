@@ -102,7 +102,7 @@ def install():
 
         # create new key
         while 1:
-            resp = input('[?] Generate new private key? (Y/n)')
+            resp = input('[?] Generate new private key? (Y/n): ')
             resp = resp.lower()
             if resp == '' or resp == 'y' or resp == 'ye' or resp == 'yes':
                 # generate RSA key
@@ -125,12 +125,9 @@ def install():
             elif resp == 'n' or resp == 'no':
                 break
 
-
         # add bash complete
         if os.path.isdir(completions_path):
-            f = open('/'.join([completions_path, 'chissy']), 'w')
-            f.write("complete -W 'start get-log version help' chissy")
-            f.close()
+            copy('template/completions/chissy', '/'.join([completions_path, 'chissy']))
 
         # create logs dir /var/log/chissy
         if not os.path.exists(logs_path):
@@ -168,8 +165,8 @@ def install():
 
         print('[*] Installation complete')
         print()
-        print('[*] Usage: chissy {start|get-log|version|help} [options]')
-        print('[*] Usage daemon: systemctl {start|stop|restart} chissy')
+        print('[*] Usage: chissy {start|get-log|remove-log|version|help} [options]')
+        print('[*] Usage daemon: systemctl {start|stop|restart|status} chissy')
         print()
     except Exception as e:
         print('[!!] Caught a exception while installing. ' + str(e))
@@ -198,7 +195,7 @@ def uninstall():
 
         # remove log files
         while 1:
-            resp = input('[?] Remove all log files? (y/N)')
+            resp = input('[?] Remove all log files? (y/N): ')
             resp = resp.lower()
             if resp == 'y' or resp == 'ye' or resp == 'yes':
                 if os.path.exists(logs_path):
@@ -250,7 +247,7 @@ def check_uninstall():
             if resp == "y" or resp == "ye" or resp == "yes":
                 uninstall()
                 break
-            elif resp == "" or resp == "n" or resp == "no" or resp == "not":
+            elif resp == "" or resp == "n" or resp == "no":
                 sys.exit(0)
     else:
         print()
@@ -259,7 +256,7 @@ def check_uninstall():
 def install_package(pckg):
     print('[!!] Chissy application need ' + pckg)
     while 1:
-        resp = input("[?] Install it now with pip? (Y/n)")
+        resp = input("[?] Install it now with pip? (Y/n): ")
         resp = resp.lower()
         if resp == '' or resp == 'y' or resp == 'ye' or resp == 'yes':
             if os.path.exists('/usr/bin/pip3'):

@@ -1,0 +1,16 @@
+# Chissy completions script
+
+_chissy_completions()
+{
+  if [ "${#COMP_WORDS[@]}" == "2" ]; then
+    COMPREPLY=($(compgen -W "start read-log remove-log version help" -- "${COMP_WORDS[1]}"))
+  elif [ "${#COMP_WORDS[@]}" != "2" ]; then
+    if [ "${COMP_WORDS[1]}" == "read-log" ]; then
+      COMPREPLY=($(compgen -W "-f -t -a --from-date --to-date --address" -- "${COMP_WORDS[2]}"))
+    elif [ "${COMP_WORDS[1]}" == "remove-log" ]; then
+      COMPREPLY=($(compgen -W "-f -t --from-date --to-date" -- "${COMP_WORDS[2]}"))
+    fi
+  fi
+}
+
+complete -F _chissy_completions chissy
