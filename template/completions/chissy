@@ -2,13 +2,17 @@
 
 _chissy_completions()
 {
-  if [ "${#COMP_WORDS[@]}" == "2" ]; then
+  compw="${#COMP_WORDS[@]}"
+  if [ "$compw" == "2" ]; then
     COMPREPLY=($(compgen -W "start read-log remove-log version help" -- "${COMP_WORDS[1]}"))
-  elif [ "${#COMP_WORDS[@]}" != "2" ]; then
-    if [ "${COMP_WORDS[1]}" == "read-log" ]; then
-      COMPREPLY=($(compgen -W "-f -t -a --from-date --to-date --address" -- "${COMP_WORDS[2]}"))
-    elif [ "${COMP_WORDS[1]}" == "remove-log" ]; then
-      COMPREPLY=($(compgen -W "-f -t --from-date --to-date" -- "${COMP_WORDS[2]}"))
+  elif [ "$compw" != "2" ]; then
+    if [ $(( "$compw" % 2 )) != "0" ]; then
+      compw="$(( "$compw" - 1 ))"
+      if [ "${COMP_WORDS[1]}" == "read-log" ]; then
+        COMPREPLY=($(compgen -W "-f -t -a --from-date --to-date --address" -- "${COMP_WORDS[$compw]}"))
+      elif [ "${COMP_WORDS[1]}" == "remove-log" ]; then
+        COMPREPLY=($(compgen -W "-f -t --from-date --to-date" -- "${COMP_WORDS[$compw]}"))
+      fi
     fi
   fi
 }

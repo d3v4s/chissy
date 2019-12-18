@@ -47,10 +47,10 @@ Options:
 
     remove-log:
         -f --from-date DATE
-            get only the logs before the date specified. Use the same DATE format to get-log options.
+            delete the logs before the date specified. Use the same DATE format to get-log options.
     
         -t --to-date DATE
-            get only the logs after the date specified. Use the same DATE format to get-log options.
+            delete the logs after the date specified. Use the same DATE format to get-log options.
 
 Examples:
     {name} start
