@@ -149,7 +149,7 @@ class Controller:
         # switch command and call function
         switcher = {
             "start": self.__startServer__,
-            "get-log": self.__readLog__,
+            "read-log": self.__readLog__,
             "remove-log": self.__removeLog__
         }
         func = switcher.get(self.__command, self.__invalidCommand__)

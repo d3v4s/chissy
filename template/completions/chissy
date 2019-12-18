@@ -4,7 +4,7 @@ _chissy_completions()
 {
   compw="${#COMP_WORDS[@]}"
   if [ "$compw" == "2" ]; then
-    COMPREPLY=($(compgen -W "start read-log remove-log version help" -- "${COMP_WORDS[1]}"))
+    COMPREPLY=($(compgen -W "start get-log remove-log version help" -- "${COMP_WORDS[1]}"))
   elif [ "$compw" != "2" ]; then
     if [ $(( "$compw" % 2 )) != "0" ]; then
       compw="$(( "$compw" - 1 ))"
