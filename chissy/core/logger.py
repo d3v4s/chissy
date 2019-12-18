@@ -31,17 +31,17 @@ class Logger:
     ###########################
 
     def set_from_date(self, from_date):
-        if not self.__validate_date__(from_date):
+        if not self.__validate_date(from_date):
             raise ValueError("[!!] Date format not valid. Use YYYY-mm-dd.")
         self.__from_date = from_date
 
     def set_to_date(self, to_date):
-        if not self.__validate_date__(to_date):
+        if not self.__validate_date(to_date):
             raise ValueError("[!!] Date format not valid. Use YYYY-mm-dd.")
         self.__to_date = to_date
 
     def set_address(self, address):
-        if not self.__validate_address__(address):
+        if not self.__validate_address(address):
             raise ValueError("[!!] Address format not valid. Use IPv4 format.")
         self.__address = address
 
@@ -51,7 +51,7 @@ class Logger:
 
     # function to validate a IPv4 address
     @staticmethod
-    def __validate_address__(address_str):
+    def __validate_address(address_str):
         regex = '^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.' \
                 '(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.' \
                 '(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.' \
@@ -60,7 +60,7 @@ class Logger:
 
     # function to validate a date
     @staticmethod
-    def __validate_date__(date_str):
+    def __validate_date(date_str):
         try:
             datetime.datetime.strptime(date_str, '%Y-%m-%d')
             return True
@@ -84,18 +84,18 @@ class Logger:
 
     # function to read the logs
     def read_log(self):
-        log_files = self.__get_log_files__()
+        log_files = self.__get_log_files()
         out = ''
         for log_file in log_files:
             path = '{logdir}/{file}'.format(logdir=self.__conf_log['path'], file=log_file)
             f = open(path, 'r')
-            out += f.read() if self.__address is None else self.__grep_address__(f)
+            out += f.read() if self.__address is None else self.__grep_address(f)
             f.close()
 
         return out
 
     def remove_log(self):
-        log_files = self.__get_log_files__()
+        log_files = self.__get_log_files()
         print('[*] Log files that match:')
         print(' - '.join(log_files))
         while 1:
@@ -114,15 +114,15 @@ class Logger:
     ###########################
 
     # function to get only the line with same ip address of attributes
-    def __grep_address__(self, logFile):
+    def __grep_address(self, log_file):
         out = ''
-        for line in logFile.readlines():
+        for line in log_file.readlines():
             if re.search(self.__address, line):
                 out += line
         return out
 
     # function to get log files by class attributes
-    def __get_log_files__(self):
+    def __get_log_files(self):
         files = []
         # get file from log directory
         for (dirpath, dirnames, filenames) in walk(self.__conf_log['path']):
