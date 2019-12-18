@@ -5,6 +5,7 @@ import paramiko
 
 from chissy.model.server import Server
 from chissy.core.logger import Logger
+from collections import defaultdict
 
 
 class Controller:
@@ -23,6 +24,8 @@ class Controller:
             return
         Controller.__instance = self
         # set attribute
+        # print(str(conf_server))
+        # exit()
         self.__conf_server = conf_server
         self.__conf_log = conf_log
         self.__command = command
@@ -57,7 +60,7 @@ class Controller:
             try:
                 # set server
                 session = paramiko.Transport(client)
-                session.add_server_key(paramiko.RSAKey(filename=self.__conf_server['hots-key-filename']))
+                session.add_server_key(paramiko.RSAKey(filename=self.__conf_server['host-key-filename']))
                 server = Server()
                 server.address = address
                 server.logger = self.__log
@@ -68,7 +71,7 @@ class Controller:
                 except paramiko.SSHException as e:
                     print('[!!] SSH negotiation failed. Error: ' + str(e))
 
-                # timeout maximum: 10
+                # timeout maximum: 14
                 # else throw paramiko exception
                 session.accept(10)
                 session.close()
@@ -88,11 +91,20 @@ class Controller:
 
     def __readLog__(self):
         options = sys.argv[2:]
-        switcher = {
-            '-a': self.__log.set_address,
-            '-f': self.__log.set_from_date,
-            '-t': self.__log.set_to_date
+
+        # set options map fo switcher
+        opt_map = {
+            self.__log.set_address: ['-a', '--address'],
+            self.__log.set_from_date: ['-f', '--from-date'],
+            self.__log.set_to_date: ['-t', '--to-date']
         }
+
+        # invert kay and value of map to create switcher
+        switcher = defaultdict(list)
+        for key, value in opt_map.items():
+            switcher[value].append(key)
+
+        # iterate options
         for i, opt in enumerate(options):
             setter = switcher.get(opt, 0)
             if setter == 0:
@@ -103,15 +115,24 @@ class Controller:
 
     def __removeLog__(self):
         options = sys.argv[2:]
-        switcher = {
-            '-f': self.__log.set_from_date,
-            '-t': self.__log.set_to_date
+
+        # set options map fo switcher
+        opt_map = {
+            self.__log.set_from_date: ['-f', '--from-date'],
+            self.__log.set_to_date: ['-t', '--to-date']
         }
+
+        # invert kay and value of map to create switcher
+        switcher = defaultdict(list)
+        for key, value in opt_map.items():
+            switcher[value].append(key)
+
+        # iterate options
         for i, opt in enumerate(options):
             setter = switcher.get(opt, 0)
             if setter == 0:
                 continue
-            setter(options[i + 1])
+            setter(options[i+1])
 
         self.__log.remove_log()
 
