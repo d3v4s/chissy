@@ -116,7 +116,7 @@ def install():
                 f = open(path, 'r')
                 conf_server = json.load(f)
                 f.close()
-                conf_server['host_key_filename'] = '{path}/conf/key/rsa.key'.format(path=install_path)
+                conf_server['host-key-filename'] = '{path}/conf/key/rsa.key'.format(path=install_path)
                 json_out = json.dumps(conf_server, sort_keys=True, indent=4, separators=(',', ': '))
                 f = open(path, 'w')
                 f.write(json_out)

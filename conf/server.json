@@ -1,5 +1,6 @@
 {
-    "address": "127.0.0.1",
+    "address": "0.0.0.0",
     "port": 8888,
-    "host-key-filename": "conf/key/test_rsa.key"
+    "host-key-filename": "conf/key/test_rsa.key",
+    "fake-access": true
 }

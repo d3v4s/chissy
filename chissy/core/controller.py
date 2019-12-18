@@ -41,7 +41,7 @@ class Controller:
             try:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                sock.bind((self.__conf_server['addess'], self.__conf_server['port']))
+                sock.bind((self.__conf_server['address'], self.__conf_server['port']))
                 sock.listen(100)
                 print()
                 print('[*] Listening for connection...')
