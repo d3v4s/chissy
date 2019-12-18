@@ -1,11 +1,9 @@
 # Create RSA key pair
 
 To create RSA kay pair, use this command:  
-`openssl req -new -x509 -days 365 -nodes -keyout test.key`
+`openssl req -new -x509 -nodes -keyout new_rsa.key`
+  
+Now execute:  
+`ssh-keygen -p -m PEM -f new_rsa.key`
 
-Now open the created file and change the first and last line on:  
-`-----BEGIN RSA PRIVATE KEY-----`  
-and  
-`-----END RSA PRIVATE KEY-----`
-
-> Change the `host_key_filename` on `conf/server.json` file.
+> Change the `host-key-filename` on `conf/server.json` file.
