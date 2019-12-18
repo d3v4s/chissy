@@ -32,27 +32,22 @@ class Logger:
 
     def set_from_date(self, from_date):
         if not self.__validate_date__(from_date):
-            raise ValueError("[!!] Date format not valid")
+            raise ValueError("[!!] Date format not valid. Use YYYY-mm-dd.")
         self.__from_date = from_date
 
     def set_to_date(self, to_date):
         if not self.__validate_date__(to_date):
-            raise ValueError("[!!] Date format not valid")
+            raise ValueError("[!!] Date format not valid. Use YYYY-mm-dd.")
         self.__to_date = to_date
 
     def set_address(self, address):
         if not self.__validate_address__(address):
-            raise ValueError("[!!] Address format not valid")
+            raise ValueError("[!!] Address format not valid. Use IPv4 format.")
         self.__address = address
 
-    # def get_from_date(self):
-    #     return self.__from_date
-    #
-    # def get_to_date(self):
-    #     return self.__to_date
-    #
-    # def get_address(self):
-    #     return self.__address
+    ###########################
+    # STATIC PRIVATE METHODS
+    ###########################
 
     # function to validate a IPv4 address
     @staticmethod
@@ -60,7 +55,7 @@ class Logger:
         regex = '^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.' \
                 '(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.' \
                 '(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.' \
-                '(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)'
+                '(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$'
         return True if re.search(regex, address_str) else False
 
     # function to validate a date
@@ -71,6 +66,10 @@ class Logger:
             return True
         except ValueError:
             return False
+
+    ###########################
+    # PUBLIC METHODS
+    ###########################
 
     # function to write log
     def write_log(self, username, password, address):
@@ -100,7 +99,7 @@ class Logger:
         print('[*] Log files that match:')
         print(' - '.join(log_files))
         while 1:
-            resp = input('[?] Do you want to remove these log files? (Y/n) ')
+            resp = input('[?] Do you want to remove these log files? (Y/n): ')
             resp = resp.lower()
             if resp == '' or resp == 'y' or resp == 'ye' or resp == 'yes':
                 for file in log_files:
@@ -109,6 +108,10 @@ class Logger:
                 break
             elif resp == 'n' or resp == 'no':
                 break
+
+    ###########################
+    # PRIVATE METHODS
+    ###########################
 
     # function to get only the line with same ip address of attributes
     def __grep_address__(self, logFile):
@@ -135,8 +138,6 @@ class Logger:
             # get date from log filename
             date = datetime.date.fromisoformat(res[0])
             # append log files that fall within the dates indicated
-            # print('from: ' + str(datetime.datetime.strptime(self.__from_date, '%Y-%m-%d').date()))
-            # print('to: ' + str(datetime.datetime.strptime(self.__to_date, '%Y-%m-%d').date()))
             if (self.__from_date is None or
                 datetime.datetime.strptime(self.__from_date, '%Y-%m-%d').date() <= date) and \
                     (self.__to_date is None or

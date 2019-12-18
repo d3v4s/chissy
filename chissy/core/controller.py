@@ -23,9 +23,7 @@ class Controller:
         if Controller.__instance is not None:
             return
         Controller.__instance = self
-        # set attribute
-        # print(str(conf_server))
-        # exit()
+        # set attributes
         self.__conf_server = conf_server
         self.__conf_log = conf_log
         self.__command = command
@@ -89,20 +87,19 @@ class Controller:
                 except IndexError:
                     pass
 
+    # method to read the logs
     def __readLog__(self):
         options = sys.argv[2:]
 
-        # set options map fo switcher
-        opt_map = {
-            self.__log.set_address: ['-a', '--address'],
-            self.__log.set_from_date: ['-f', '--from-date'],
-            self.__log.set_to_date: ['-t', '--to-date']
+        # set options map
+        switcher = {
+            '--address': self.__log.set_address,
+            '-a': self.__log.set_address,
+            '--from-date': self.__log.set_from_date,
+            '-f': self.__log.set_from_date,
+            '--to-date': self.__log.set_to_date,
+            '-t': self.__log.set_to_date
         }
-
-        # invert kay and value of map to create switcher
-        switcher = defaultdict(list)
-        for key, value in opt_map.items():
-            switcher[value].append(key)
 
         # iterate options
         for i, opt in enumerate(options):
@@ -113,6 +110,7 @@ class Controller:
 
         print(self.__log.read_log())
 
+    # method to remove the logs
     def __removeLog__(self):
         options = sys.argv[2:]
 
@@ -136,6 +134,7 @@ class Controller:
 
         self.__log.remove_log()
 
+    # method for invalid command
     def __invalidCommand__(self):
         print('[!!] Invalid command ' + str(self.__command))
         print('[!!] Show the help with "{name} help"'.format(name=sys.argv[0]))
@@ -145,6 +144,7 @@ class Controller:
     # PUBLIC METHODS
     #####################################
 
+    # method to execute the request command
     def execute(self):
         # switch command and call function
         switcher = {
