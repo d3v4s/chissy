@@ -1,4 +1,3 @@
-import os
 import sys
 import socket
 import paramiko
@@ -34,7 +33,7 @@ class Controller:
     #####################################
 
     # method to start fake server
-    def __startServer__(self):
+    def __start_server(self):
         print('[*] Starting server...')
         # server loop
         while 1:
@@ -88,7 +87,7 @@ class Controller:
                     pass
 
     # method to read the logs
-    def __readLog__(self):
+    def __read_log(self):
         options = sys.argv[2:]
 
         # set options map
@@ -111,19 +110,16 @@ class Controller:
         print(self.__log.read_log())
 
     # method to remove the logs
-    def __removeLog__(self):
+    def __remove_log(self):
         options = sys.argv[2:]
 
         # set options map fo switcher
-        opt_map = {
-            self.__log.set_from_date: ['-f', '--from-date'],
-            self.__log.set_to_date: ['-t', '--to-date']
+        switcher = {
+            '--from-date': self.__log.set_from_date,
+            '-f': self.__log.set_from_date,
+            '--to-date': self.__log.set_to_date,
+            '-t': self.__log.set_to_date
         }
-
-        # invert kay and value of map to create switcher
-        switcher = defaultdict(list)
-        for key, value in opt_map.items():
-            switcher[value].append(key)
 
         # iterate options
         for i, opt in enumerate(options):
@@ -135,7 +131,7 @@ class Controller:
         self.__log.remove_log()
 
     # method for invalid command
-    def __invalidCommand__(self):
+    def __invalid_command(self):
         print('[!!] Invalid command ' + str(self.__command))
         print('[!!] Show the help with "{name} help"'.format(name=sys.argv[0]))
         sys.exit(1)
@@ -148,9 +144,9 @@ class Controller:
     def execute(self):
         # switch command and call function
         switcher = {
-            "start": self.__startServer__,
-            "get-log": self.__readLog__,
-            "remove-log": self.__removeLog__
+            "start": self.__start_server,
+            "get-log": self.__read_log,
+            "remove-log": self.__remove_log
         }
-        func = switcher.get(self.__command, self.__invalidCommand__)
+        func = switcher.get(self.__command, self.__invalid_command)
         func()
