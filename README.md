@@ -16,7 +16,7 @@ Now install Chissy, than execute:
 
 ## Usage
 You can run Chissy as _daemon_ through:  
-`systemctl start|stop|restart chissy.service`
+`systemctl start|stop|restart|status chissy.service`
 
 or use:  
 `chissy start|get-log|remove-log|version|help [options]`  
