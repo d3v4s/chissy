@@ -4,7 +4,6 @@ import paramiko
 
 from chissy.model.server import Server
 from chissy.core.logger import Logger
-from collections import defaultdict
 
 
 class Controller:
