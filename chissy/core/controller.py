@@ -114,15 +114,12 @@ class Controller:
         options = sys.argv[2:]
 
         # set options map fo switcher
-        opt_map = {
-            self.__log.set_from_date: ['-f', '--from-date'],
-            self.__log.set_to_date: ['-t', '--to-date']
+        switcher = {
+            '--from-date': self.__log.set_from_date,
+            '-f': self.__log.set_from_date,
+            '--to-date': self.__log.set_to_date,
+            '-t': self.__log.set_to_date
         }
-
-        # invert kay and value of map to create switcher
-        switcher = defaultdict(list)
-        for key, value in opt_map.items():
-            switcher[value].append(key)
 
         # iterate options
         for i, opt in enumerate(options):
